@@ -36,7 +36,9 @@ public class Util {
     public static Object sqlRS(DataSource ds, String sql, Function<ResultSet, Object> fun) {
         try (Connection conn = ds.getConnection();
                 Statement stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            //定制postgres fetchsize只能为>=0
+//            stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt.setFetchSize(1000);
             try (ResultSet rs = stmt.executeQuery(sql)) {
                 return fun.apply(rs);
             }
@@ -50,7 +52,9 @@ public class Util {
         try (Connection conn = ds.getConnection()) {
             try (PreparedStatement pstmt = conn
                 .prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-                pstmt.setFetchSize(Integer.MIN_VALUE);
+                //定制postgres fetchsize只能为>=0
+//                pstmt.setFetchSize(Integer.MIN_VALUE);
+                pstmt.setFetchSize(1000);
                 if (values != null) {
                     for (int i = 0; i < values.size(); i++) {
                         pstmt.setObject(i + 1, values.get(i));
